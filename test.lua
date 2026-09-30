@@ -118,7 +118,7 @@ local LINE_1          = "[B1ZE]"
 local LINE_2          = "By Magnus_Ocean77"
 local LINE_3          = "Fixed by MXSKV (CrazyRblxr228)"
 local BG_COLOR        = Color3.fromRGB(20, 30, 60)
-local BG_TRANSPARENCY = 0.4local
+local BG_TRANSPARENCY = 0.4
 local AVATAR_SIZE     = 200
 
 local ACCENT     = Color3.fromRGB(100, 150, 255)
