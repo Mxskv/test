@@ -538,9 +538,28 @@ if spot then
     teleportTo(PRE_FARM_TP)
     task.wait(PRE_FARM_WAIT)
 
-    while running do
-        local worldBefore = BlockWorldClient.GetLocal()
+    -- Ждём появления блоков в новой шахте
+    local function waitForNewBlocks()
+        local attempts = 0
+        repeat
+            task.wait(0.5)
+            local currentWorld = BlockWorldClient.GetLocal()
+            if currentWorld then
+                local wRegion = currentWorld:GetRegion()
+                local wStartX = wRegion.Min.X + 1
+                local wStartZ = wRegion.Min.Z + 1
+                for checkY = wRegion.Max.Y, wRegion.Min.Y, -1 do
+                    if currentWorld:GetBlock(Vector3int16.new(wStartX, checkY, wStartZ)) then
+                        return true
+                    end
+                end
+            end
+            attempts = attempts + 1
+        until attempts > 240
+        return false
+    end
 
+    while running do
         local ok, err = pcall(farmOnce)
         if not ok then
             warn("[Magnus] Ошибка в farmOnce:", err)
@@ -548,19 +567,16 @@ if spot then
         end
 
         if running then
-            print("[Magnus] Цикл завершён. Возврат наверх, ждём новую шахту...")
+            print("[Magnus] Цикл завершён. Возврат наверх, ждём появления блоков...")
             teleportTo(PRE_FARM_TP)
 
-            -- ⏱️ Ждём, пока игра заменит мир (старый объект ~= новый объект)
-            local attempts = 0
-            repeat
-                task.wait(0.5)
-                local currentWorld = BlockWorldClient.GetLocal()
-                attempts = attempts + 1
-            until (currentWorld and currentWorld ~= worldBefore) or attempts > 240
+            if waitForNewBlocks() then
+                print("[Magnus] Блоки появились — начинаем новый цикл!")
+            else
+                print("[Magnus] Блоки не появились за 120 сек, пробуем снова...")
+            end
 
-            print("[Magnus] Новая шахта загружена — начинаем новый цикл")
-            task.wait(2)
+            task.wait(0.5)
         end
     end
 
