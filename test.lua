@@ -557,7 +557,7 @@ if spot then
                 task.wait(0.5)
                 local currentWorld = BlockWorldClient.GetLocal()
                 attempts = attempts + 1
-            until (currentWorld and currentWorld ~= worldBefore) or attempts > 240
+            until (currentWorld and currentWorld ~= worldBefore) or attempts > 120
 
             print("[Magnus] Новая шахта загружена — начинаем новый цикл")
             task.wait(2)
