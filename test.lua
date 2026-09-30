@@ -54,7 +54,7 @@ local TP_SETTLE  = 0.80
 local DELAY      = 0.10
 local GREEN_MAX_Y = -30
 
-local TELEPORT_CHECK_FROM_Y = -60
+local TELEPORT_CHECK_FROM_Y = -120
 local TELEPORT_DETECT_ABOVE_Y = -10
 
 local GREEN_KEY = Enum.KeyCode.Two
@@ -460,7 +460,6 @@ local function waitForWorld()
     return true
 end
 
--- Флаг: были ли мы уже ниже TELEPORT_CHECK_FROM_Y в этом цикле
 local wentBelowCheckY = false
 
 local function wasTeleportedToTop()
@@ -469,7 +468,6 @@ local function wasTeleportedToTop()
 
     local posY = hrp.Position.Y
 
-    -- Детект выключен пока не спустились ниже TELEPORT_CHECK_FROM_Y
     if not wentBelowCheckY then
         if posY < TELEPORT_CHECK_FROM_Y then
             wentBelowCheckY = true
@@ -477,7 +475,6 @@ local function wasTeleportedToTop()
         return false
     end
 
-    -- Мы уже были ниже -60. Если теперь персонаж выше -10 → рестарт
     if posY > TELEPORT_DETECT_ABOVE_Y then
         return true
     end
@@ -489,18 +486,17 @@ local function farmOnce()
     world = nil
     if not waitForWorld() then return false end
 
-    -- Сбрасываем флаг для нового цикла
     wentBelowCheckY = false
 
     while running do
-        local y = findHighestYInColumn()
-        if not y then
+        if wasTeleportedToTop() then
+            print("[Magnus] РЕСТАРТ! Завершаем цикл фарма")
             return true
         end
 
-        -- 🔄 Проверка: игра телепортировала персонажа наверх → рестарт
-        if wasTeleportedToTop() then
-            print("[Magnus] Рестарт! Персонаж наверху — выходим и ждём новую шахту")
+        local y = findHighestYInColumn()
+        if not y then
+            print("[Magnus] Блоки кончились — завершаем цикл")
             return true
         end
 
@@ -511,9 +507,8 @@ local function farmOnce()
             for z = startZ, region.Max.Z - 1, STEP do
                 if not running then break end
 
-                -- 🔄 Проверка прямо перед телепортом к блоку
                 if wasTeleportedToTop() then
-                    print("[Magnus] Рестарт во время прохода — выходим")
+                    print("[Magnus] РЕСТАРТ во время прохода — завершаем цикл")
                     return true
                 end
 
@@ -544,6 +539,8 @@ if spot then
     task.wait(PRE_FARM_WAIT)
 
     while running do
+        local worldBefore = BlockWorldClient.GetLocal()
+
         local ok, err = pcall(farmOnce)
         if not ok then
             warn("[Magnus] Ошибка в farmOnce:", err)
@@ -551,9 +548,19 @@ if spot then
         end
 
         if running then
-            print("[Magnus] Возврат наверх, ждём новую шахту...")
+            print("[Magnus] Цикл завершён. Возврат наверх, ждём новую шахту...")
             teleportTo(PRE_FARM_TP)
-            task.wait(PRE_FARM_WAIT)
+
+            -- ⏱️ Ждём, пока игра заменит мир (старый объект ~= новый объект)
+            local attempts = 0
+            repeat
+                task.wait(0.5)
+                local currentWorld = BlockWorldClient.GetLocal()
+                attempts = attempts + 1
+            until (currentWorld and currentWorld ~= worldBefore) or attempts > 240
+
+            print("[Magnus] Новая шахта загружена — начинаем новый цикл")
+            task.wait(2)
         end
     end
 
