@@ -116,8 +116,9 @@ end
 local OWNER_USER_ID   = 11205845971
 local LINE_1          = "[B1ZE]"
 local LINE_2          = "By Magnus_Ocean77"
+local LINE_3          = "Fixed by MXSKV (CrazyRblxr228)"
 local BG_COLOR        = Color3.fromRGB(20, 30, 60)
-local BG_TRANSPARENCY = 0.4
+local BG_TRANSPARENCY = 0.4local
 local AVATAR_SIZE     = 200
 
 local ACCENT     = Color3.fromRGB(100, 150, 255)
@@ -149,8 +150,8 @@ bg.ZIndex = 1
 bg.Parent = mainContainer
 
 local container = Instance.new("Frame")
-container.Size = UDim2.new(0, AVATAR_SIZE, 0, AVATAR_SIZE + 100)
-container.Position = UDim2.new(0.5, -AVATAR_SIZE/2, 0.5, -(AVATAR_SIZE + 100)/2)
+container.Size = UDim2.new(0, AVATAR_SIZE, 0, AVATAR_SIZE + 130)
+container.Position = UDim2.new(0.5, -AVATAR_SIZE/2, 0.5, -(AVATAR_SIZE + 130)/2)
 container.BackgroundTransparency = 1
 container.ZIndex = 2
 container.Parent = mainContainer
@@ -198,6 +199,24 @@ local sizeC2 = Instance.new("UITextSizeConstraint")
 sizeC2.MaxTextSize = 22
 sizeC2.MinTextSize = 12
 sizeC2.Parent = line2
+
+local line3 = Instance.new("TextLabel")
+line3.Size = UDim2.new(1, 0, 0, 24)
+line3.Position = UDim2.new(0, 0, 0, AVATAR_SIZE + 80)
+line3.BackgroundTransparency = 1
+line3.Text = LINE_3
+line3.TextColor3 = Color3.fromRGB(150, 180, 255)
+line3.TextStrokeTransparency = 0.6
+line3.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+line3.Font = Enum.Font.GothamBold
+line3.TextScaled = true
+line3.ZIndex = 3
+line3.Parent = container
+
+local sizeC3 = Instance.new("UITextSizeConstraint")
+sizeC3.MaxTextSize = 18
+sizeC3.MinTextSize = 10
+sizeC3.Parent = line3
 
 local statsPanel = Instance.new("Frame")
 statsPanel.Size = UDim2.new(0, 360, 0, 280)
