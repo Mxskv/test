@@ -50,8 +50,8 @@ local LOAD_WAIT  = 10
 local EVENT_WAIT = 6
 local PRE_FARM_TP = Vector3.new(27610.05, 16.65, -8107.77)
 local PRE_FARM_WAIT = 1
-local TP_SETTLE  = 0.60
-local DELAY      = 0.08
+local TP_SETTLE  = 0.80
+local DELAY      = 0.10
 local GREEN_MAX_Y = -30
 
 local TELEPORT_CHECK_FROM_Y = -120
